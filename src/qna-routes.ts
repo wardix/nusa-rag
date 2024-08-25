@@ -7,9 +7,9 @@ app.post('/', async (c) => {
   const data = await c.req.json()
   try {
     if (Array.isArray(data)) {
-      data.forEach(({ question, answer }) => {
-        storeRagQna(question, answer)
-      })
+      for (const {question, answer} of data) {
+        await storeRagQna(question, answer)
+      }
     } else {
       const { question, answer } = data
       storeRagQna(question, answer)

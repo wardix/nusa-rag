@@ -4,9 +4,16 @@ import { storeRagQna } from './qna'
 const app = new Hono()
 
 app.post('/', async (c) => {
-  const { question, answer } = await c.req.json()
+  const data = await c.req.json()
   try {
-    storeRagQna(question, answer)
+    if (Array.isArray(data)) {
+      data.forEach(({ question, answer }) => {
+        storeRagQna(question, answer)
+      })
+    } else {
+      const { question, answer } = data
+      storeRagQna(question, answer)
+    }
     return c.json({
       message: 'Data received successfully',
     })

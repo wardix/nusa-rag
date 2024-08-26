@@ -24,10 +24,13 @@ export async function storeRagQna(
     'SELECT VALUE id FROM rag_answer WHERE norm_answer = $normAnswer',
     { normAnswer },
   )
+  const now = new Date()
   if (!queryResult || queryResult.length == 0) {
     const [createResult] = await db.create<any>('rag_answer', {
       answer,
       norm_answer: normAnswer,
+      created_at: now,
+      updated_at: now,
     })
     answerRecord = createResult.id
   } else {
@@ -45,15 +48,19 @@ export async function storeRagQna(
       question_vector: vector,
       norm_question: normQuestion,
       rag_answer: answerRecord,
+      created_at: now,
+      updated_at: now,
     })
   } else {
     const qnaAnswerRecord = queryResult[0].rag_answer
     if (qnaAnswerRecord.id !== answerRecord.id) {
       await db.query<any>(
-        'UPDATE rag_qna SET rag_answer = $answer WHERE norm_question = $normQuestion',
+        'UPDATE rag_qna SET rag_answer = $answer, updated_at = $now' +
+          ' WHERE norm_question = $normQuestion',
         {
           answer: answerRecord,
           normQuestion,
+          now,
         },
       )
     }

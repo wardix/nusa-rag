@@ -10,3 +10,5 @@ DEFINE INDEX IF NOT EXISTS question_vector_index ON rag_qna
   FIELDS question_vector
   MTREE DIMENSION 768
   DIST COSINE;
+DEFINE FIELD IF NOT EXISTS created_at ON TABLE rag_qna TYPE datetime;
+DEFINE FIELD IF NOT EXISTS updated_at ON TABLE rag_qna TYPE datetime;

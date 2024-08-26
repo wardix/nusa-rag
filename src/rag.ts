@@ -70,7 +70,7 @@ export async function getRagResponse(prompt: string): Promise<string> {
     context,
   )
 
-  const response = generateResponse(prompt, systemInstruction)
+  const response = await generateResponse(prompt, systemInstruction)
   const db = await initDb()
   if (db) {
     await db.create<any>('rag_log', {

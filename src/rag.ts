@@ -10,7 +10,7 @@ import {
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
 
-async function getRelevantContext(question: string): Promise<string> {
+async function getRelevantContext(question: string): Promise<any> {
   const model = genAI.getGenerativeModel({
     model: EMBEDDING_MODEL,
   })
@@ -18,6 +18,8 @@ async function getRelevantContext(question: string): Promise<string> {
   const embeddingResult = await model.embedContent(question)
   const vector = embeddingResult.embedding.values
   let context = ''
+  let similarQuestion = ''
+  let similarity = 0
   if (db) {
     const [queryResult] = await db.query<any>(
       'SELECT question, rag_answer.answer AS answer,' +
@@ -25,24 +27,32 @@ async function getRelevantContext(question: string): Promise<string> {
         ' FROM rag_qna WHERE (question_vector <|1|> $vector)',
       { vector },
     )
-    queryResult.forEach(({ answer, similarity }: any) => {
-      if (similarity >= +SIMILARITY_THRESHOLD) {
-        context = answer
-      }
-    })
+    queryResult.forEach(
+      ({
+        question: questionValue,
+        answer,
+        similarity: similarityValue,
+      }: any) => {
+        similarQuestion = questionValue
+        similarity = similarityValue
+        if (similarity >= +SIMILARITY_THRESHOLD) {
+          context = answer
+        }
+      },
+    )
   }
 
-  return context
+  return {
+    question: similarQuestion,
+    similarity,
+    context,
+  }
 }
 
 async function generateResponse(
   question: string,
-  context: string,
+  systemInstruction: string,
 ): Promise<string> {
-  const systemInstruction = SYSTEM_INSTRUCTION_TEMPLATE.replace(
-    '{context}',
-    context,
-  )
   const model = genAI.getGenerativeModel({
     model: GENERATIVE_MODEL,
     systemInstruction,
@@ -53,7 +63,27 @@ async function generateResponse(
 }
 
 export async function getRagResponse(prompt: string): Promise<string> {
-  const context = await getRelevantContext(prompt)
+  const now = new Date()
+  const { question, similarity, context } = await getRelevantContext(prompt)
+  const systemInstruction = SYSTEM_INSTRUCTION_TEMPLATE.replace(
+    '{context}',
+    context,
+  )
 
-  return generateResponse(prompt, context)
+  const response = generateResponse(prompt, systemInstruction)
+  const db = await initDb()
+  if (db) {
+    await db.create<any>('rag_log', {
+      question: prompt,
+      nearest_question: question,
+      similarity,
+      context,
+      system: systemInstruction,
+      response,
+      created_at: now,
+      updated_at: now,
+    })
+  }
+
+  return response
 }

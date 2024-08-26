@@ -1,0 +1,9 @@
+DEFINE TABLE IF NOT EXISTS rag_log SCHEMAFULL;
+DEFINE FIELD IF NOT EXISTS question ON TABLE rag_log TYPE string;
+DEFINE FIELD IF NOT EXISTS nearest_question ON TABLE rag_log TYPE string;
+DEFINE FIELD IF NOT EXISTS similarity ON TABLE rag_log TYPE float;
+DEFINE FIELD IF NOT EXISTS context ON TABLE rag_log TYPE string;
+DEFINE FIELD IF NOT EXISTS system ON TABLE rag_log TYPE string;
+DEFINE FIELD IF NOT EXISTS response ON TABLE rag_log TYPE string;
+DEFINE FIELD IF NOT EXISTS created_at ON TABLE rag_log TYPE datetime;
+DEFINE FIELD IF NOT EXISTS updated_at ON TABLE rag_log TYPE datetime;

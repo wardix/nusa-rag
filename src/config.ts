@@ -17,3 +17,6 @@ export const SYSTEM_INSTRUCTION_TEMPLATE =
 export const SIMILARITY_THRESHOLD = process.env.SIMILARITY_THRESHOLD || 0.6
 
 export const BASIC_USERS = process.env.BASIC_USERS || '[]'
+
+export const NATS_SERVERS = process.env.NATS_SERVERS || 'nats://localhost:4222'
+export const NATS_TOKEN = process.env.NATS_TOKEN || ''

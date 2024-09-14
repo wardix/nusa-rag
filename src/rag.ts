@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { JSONCodec, connect } from 'nats'
 import { initDb } from './surreal'
 import {
   GEMINI_API_KEY,
@@ -6,9 +7,12 @@ import {
   SIMILARITY_THRESHOLD,
   GENERATIVE_MODEL,
   SYSTEM_INSTRUCTION_TEMPLATE,
+  NATS_SERVERS,
+  NATS_TOKEN,
 } from './config'
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
+const jc = JSONCodec()
 
 async function getRelevantContext(question: string): Promise<any> {
   const model = genAI.getGenerativeModel({
@@ -84,6 +88,27 @@ export async function getRagResponse(prompt: string): Promise<string> {
       updated_at: now,
     })
   }
+
+  const nc = await connect({
+    servers: NATS_SERVERS,
+    token: NATS_TOKEN,
+  })
+
+  const js = nc.jetstream()
+  await js.publish(
+    'event.nusarag_retrieval_complete',
+    jc.encode({
+      time: now,
+      question: prompt,
+      mostSimilarQuestion: question,
+      similarity,
+      context,
+      systemInstruction,
+      response,
+    }),
+  )
+
+  await nc.close()
 
   return response
 }

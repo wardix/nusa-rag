@@ -96,7 +96,7 @@ export async function getRagResponse(prompt: string): Promise<string> {
 
   const js = nc.jetstream()
   await js.publish(
-    'event.nusarag_retrieval_complete',
+    'events.nusarag_retrieval_complete',
     jc.encode({
       time: now,
       question: prompt,

@@ -4,6 +4,7 @@ import { basicAuth } from 'hono/basic-auth'
 import { BASIC_USERS, PORT } from './config'
 import rag from './rag-routes'
 import qna from './qna-routes'
+import gen from './gen-routes'
 
 const app = new Hono()
 
@@ -15,6 +16,7 @@ const authMiddleware = basicAuth({ verifyUser })
 app.use(logger())
 app.use('/rag', authMiddleware)
 app.use('/qna', authMiddleware)
+app.use('/gen', authMiddleware)
 
 app.get('/', (c) => {
   return c.text('OK')
@@ -22,6 +24,7 @@ app.get('/', (c) => {
 
 app.route('/rag', rag)
 app.route('/qna', qna)
+app.route('/gen', gen)
 
 export default {
   port: +PORT,

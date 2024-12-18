@@ -1,4 +1,5 @@
 DEFINE TABLE IF NOT EXISTS rag_log SCHEMAFULL;
+DEFINE FIELD IF NOT EXISTS user ON TABLE rag_log TYPE string;
 DEFINE FIELD IF NOT EXISTS question ON TABLE rag_log TYPE string;
 DEFINE FIELD IF NOT EXISTS nearest_question ON TABLE rag_log TYPE string;
 DEFINE FIELD IF NOT EXISTS similarity ON TABLE rag_log TYPE float;

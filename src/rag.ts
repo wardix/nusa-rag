@@ -66,7 +66,10 @@ async function generateResponse(
   return result.response.text()
 }
 
-export async function getRagResponse(prompt: string): Promise<string> {
+export async function getRagResponse(
+  prompt: string,
+  user: string,
+): Promise<string> {
   const now = new Date()
   const { question, similarity, context } = await getRelevantContext(prompt)
   const systemInstruction = SYSTEM_INSTRUCTION_TEMPLATE.replace(
@@ -78,6 +81,7 @@ export async function getRagResponse(prompt: string): Promise<string> {
   const db = await initDb()
   if (db) {
     await db.create<any>('rag_log', {
+      user,
       question: prompt,
       nearest_question: question,
       similarity,
@@ -99,6 +103,7 @@ export async function getRagResponse(prompt: string): Promise<string> {
     'events.nusarag_retrieval_complete',
     jc.encode({
       time: now,
+      user,
       question: prompt,
       mostSimilarQuestion: question,
       similarity,

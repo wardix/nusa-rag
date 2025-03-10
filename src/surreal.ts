@@ -1,4 +1,4 @@
-import { Surreal } from 'surrealdb.js'
+import { Surreal } from 'surrealdb'
 import {
   SURREALDB_DATABASE,
   SURREALDB_NAMESPACE,

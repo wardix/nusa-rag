@@ -2,7 +2,7 @@
   "name": "nusa-rag",
   "scripts": {
     "dev": "bun run --hot src/main.ts",
-    "build": "bun build --target bun --sourcemap --minify --outfile dist/main.js src/main.ts"
+    "build": "bun build --target bun --minify --outfile dist/main.js src/main.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.14.0",

@@ -25,7 +25,7 @@ async function getRelevantContext(question: string): Promise<any> {
   let similarQuestion = ''
   let similarity = 0
   if (db) {
-    const [queryResult] = await db.query<any>(
+    const [queryResult] = await db.query<any[]>(
       'SELECT question, rag_answer.answer AS answer,' +
         ' vector::similarity::cosine(question_vector, $vector) AS similarity' +
         ' FROM rag_qna WHERE (question_vector <|1|> $vector)',

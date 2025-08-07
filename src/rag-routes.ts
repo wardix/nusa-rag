@@ -10,8 +10,8 @@ app.get('/', async (c) => {
 })
 
 app.post('/', async (c) => {
-  const { prompt } = await c.req.json()
-  const response = await getRagResponse(prompt, getBasicUser(c))
+  const { prompt, session } = await c.req.json()
+  const response = await getRagResponse(prompt, getBasicUser(c), session)
   return c.json({ response })
 })
 

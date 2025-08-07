@@ -69,6 +69,7 @@ async function generateResponse(
 export async function getRagResponse(
   prompt: string,
   user: string,
+  session: string = ''
 ): Promise<string> {
   const now = new Date()
   const { question, similarity, context } = await getRelevantContext(prompt)
@@ -81,6 +82,7 @@ export async function getRagResponse(
   const db = await initDb()
   if (db) {
     await db.create<any>('rag_log', {
+      session,
       user,
       question: prompt,
       nearest_question: question,
@@ -103,6 +105,7 @@ export async function getRagResponse(
     'events.nusarag_retrieval_complete',
     jc.encode({
       time: now,
+      session,
       user,
       question: prompt,
       mostSimilarQuestion: question,
